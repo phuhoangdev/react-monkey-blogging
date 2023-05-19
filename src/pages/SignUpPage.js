@@ -4,9 +4,12 @@ import { Label } from "../components/label";
 import { Input } from "../components/input";
 import { useForm } from "react-hook-form";
 import IconEyeClose from "../components/icon/IconEyeClose";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import IconEyeOpen from "../components/icon/IconEyeOpen";
 import Button from "../components/button/Button";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { toast } from "react-toastify";
 
 const SignUpPageStyles = styled.div`
      min-height: 100vh;
@@ -29,6 +32,12 @@ const SignUpPageStyles = styled.div`
      }
 `;
 
+const schema = yup.object({
+     fullname: yup.string().required("Fullname is required"),
+     email: yup.string().email("Please enter valid email address").required("Email is required"),
+     password: yup.string().min(8, "Your password must be at least 8 characters or greater").required("Password is required"),
+});
+
 const SignUpPage = () => {
      const {
           control,
@@ -36,7 +45,10 @@ const SignUpPage = () => {
           formState: { errors, isValid, isSubmitting },
           watch,
           reset,
-     } = useForm({});
+     } = useForm({
+          mode: "onChange",
+          resolver: yupResolver(schema),
+     });
 
      const handleSignUp = (values) => {
           if (!isValid) return;
@@ -48,6 +60,17 @@ const SignUpPage = () => {
      };
 
      const [togglePassword, setTogglePassword] = useState(false);
+
+     useEffect(() => {
+          const arrErrors = Object.values(errors);
+
+          if (arrErrors.length > 0) {
+               toast.error(arrErrors[0]?.message, {
+                    pauseOnHover: false,
+                    delay: 0,
+               });
+          }
+     }, [errors]);
 
      return (
           <SignUpPageStyles>
@@ -61,7 +84,7 @@ const SignUpPage = () => {
                          </Field>
                          <Field>
                               <Label htmlFor="email">Email address</Label>
-                              <Input type="email" name="email" placeholder="Enter your email address" control={control} />
+                              <Input type="text" name="email" placeholder="Enter your email address" control={control} />
                          </Field>
                          <Field>
                               <Label htmlFor="password">Password</Label>
