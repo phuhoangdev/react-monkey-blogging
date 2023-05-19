@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import IconEyeClose from "../components/icon/IconEyeClose";
 import { useState } from "react";
 import IconEyeOpen from "../components/icon/IconEyeOpen";
+import Button from "../components/button/Button";
 
 const SignUpPageStyles = styled.div`
      min-height: 100vh;
@@ -34,9 +35,17 @@ const SignUpPage = () => {
           handleSubmit,
           formState: { errors, isValid, isSubmitting },
           watch,
+          reset,
      } = useForm({});
 
-     const handleSignUp = (values) => {};
+     const handleSignUp = (values) => {
+          if (!isValid) return;
+          return new Promise((resolve) => {
+               setTimeout(() => {
+                    resolve();
+               }, 5000);
+          });
+     };
 
      const [togglePassword, setTogglePassword] = useState(false);
 
@@ -64,6 +73,17 @@ const SignUpPage = () => {
                                    )}
                               </Input>
                          </Field>
+                         <Button
+                              type="submit"
+                              style={{
+                                   maxWidth: 350,
+                                   margin: "0 auto",
+                              }}
+                              disabled={isSubmitting}
+                              isLoading={isSubmitting}
+                         >
+                              Sign Up
+                         </Button>
                     </form>
                </div>
           </SignUpPageStyles>
