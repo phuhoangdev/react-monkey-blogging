@@ -1,63 +1,38 @@
+import { useEffect, useState } from "react";
+import { useAuth } from "../contexts/auth-context";
+import { NavLink, useNavigate } from "react-router-dom";
+import AuthPage from "./AuthPage";
+import { useForm } from "react-hook-form";
 import { Field } from "../components/field";
 import { Label } from "../components/label";
 import { Input } from "../components/input";
-import { useForm } from "react-hook-form";
-import IconEyeClose from "../components/icon/IconEyeClose";
-import { useEffect, useState } from "react";
-import IconEyeOpen from "../components/icon/IconEyeOpen";
 import Button from "../components/button/Button";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth, db } from "../firebase-app/firebase-config";
-import { NavLink, useNavigate } from "react-router-dom";
-import { addDoc, collection } from "firebase/firestore";
-import AuthPage from "./AuthPage";
+import IconEyeOpen from "../components/icon/IconEyeOpen";
+import IconEyeClose from "../components/icon/IconEyeClose";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase-app/firebase-config";
 
 const schema = yup.object({
-     fullname: yup.string().required("Fullname is required"),
      email: yup.string().email("Please enter valid email address").required("Email is required"),
      password: yup.string().min(8, "Your password must be at least 8 characters or greater").required("Password is required"),
 });
 
-const SignUpPage = () => {
+const SignInPage = () => {
+     const { userInfo } = useAuth();
      const navigate = useNavigate();
+     const [togglePassword, setTogglePassword] = useState(false);
 
      const {
-          control,
           handleSubmit,
+          control,
           formState: { errors, isValid, isSubmitting },
-          watch,
-          reset,
      } = useForm({
           mode: "onChange",
           resolver: yupResolver(schema),
      });
-
-     const handleSignUp = async (values) => {
-          if (!isValid) return;
-          // return new Promise((resolve) => {
-          //      setTimeout(() => {
-          //           resolve();
-          //      }, 5000);
-          // });
-
-          const user = await createUserWithEmailAndPassword(auth, values.email, values.password);
-          await updateProfile(auth.currentUser, {
-               displayName: values.fullname,
-          });
-          const colRef = collection(db, "users");
-          addDoc(colRef, {
-               fullname: values.fullname,
-               email: values.email,
-               password: values.password,
-          });
-          toast.success("Register successfully");
-          navigate("/");
-     };
-
-     const [togglePassword, setTogglePassword] = useState(false);
 
      useEffect(() => {
           const arrErrors = Object.values(errors);
@@ -71,19 +46,27 @@ const SignUpPage = () => {
      }, [errors]);
 
      useEffect(() => {
-          document.title = "Register Page";
+          document.title = "Login Page";
+          if (userInfo?.email) {
+               navigate("/");
+          } else {
+               navigate("/sign-up");
+          }
+          // eslint-disable-next-line react-hooks/exhaustive-deps
      }, []);
+
+     const handleSignIn = async (values) => {
+          if (!isValid) return;
+          await signInWithEmailAndPassword(auth, values.email, values.password);
+          navigate("/");
+     };
 
      return (
           <AuthPage>
-               <form className="form" onSubmit={handleSubmit(handleSignUp)}>
-                    <Field>
-                         <Label htmlFor="fullname">Fullname</Label>
-                         <Input type="text" name="fullname" placeholder="Enter your fullname" control={control} />
-                    </Field>
+               <form className="form" onSubmit={handleSubmit(handleSignIn)}>
                     <Field>
                          <Label htmlFor="email">Email address</Label>
-                         <Input type="text" name="email" placeholder="Enter your email address" control={control} />
+                         <Input type="email" name="email" placeholder="Enter your email address" control={control} />
                     </Field>
                     <Field>
                          <Label htmlFor="password">Password</Label>
@@ -95,8 +78,8 @@ const SignUpPage = () => {
                               )}
                          </Input>
                     </Field>
-                    <div className="have-account">
-                         You already have an account? <NavLink to={"/sign-in"}>Login</NavLink>
+                    <div className="hace-account">
+                         You have not an a account?<NavLink to={"/sign-up"}>Register an account</NavLink>
                     </div>
                     <Button
                          type="submit"
@@ -107,11 +90,11 @@ const SignUpPage = () => {
                          disabled={isSubmitting}
                          isLoading={isSubmitting}
                     >
-                         Sign Up
+                         Sign in
                     </Button>
                </form>
           </AuthPage>
      );
 };
 
-export default SignUpPage;
+export default SignInPage;
