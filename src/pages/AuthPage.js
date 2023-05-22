@@ -1,3 +1,4 @@
+import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 
 const AuthPageStyles = styled.div`
@@ -35,7 +36,9 @@ const AuthPage = ({ children }) => {
      return (
           <AuthPageStyles>
                <div className="container">
-                    <img className="logo" src="./assets/images/logo.svg" alt="logo" />
+                    <NavLink to="/">
+                         <img className="logo" src="./assets/images/logo.svg" alt="logo" />
+                    </NavLink>
                     <h1 className="heading">Monkey Blogging</h1>
 
                     {children}

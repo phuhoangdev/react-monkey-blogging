@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { Field } from "../components/field";
 import { Label } from "../components/label";
 import { Input } from "../components/input";
-import Button from "../components/button/Button";
+import { Button } from "../components/button";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
@@ -49,11 +49,9 @@ const SignInPage = () => {
           document.title = "Login Page";
           if (userInfo?.email) {
                navigate("/");
-          } else {
-               navigate("/sign-up");
           }
           // eslint-disable-next-line react-hooks/exhaustive-deps
-     }, []);
+     }, [userInfo]);
 
      const handleSignIn = async (values) => {
           if (!isValid) return;
@@ -78,8 +76,8 @@ const SignInPage = () => {
                               )}
                          </Input>
                     </Field>
-                    <div className="hace-account">
-                         You have not an a account?<NavLink to={"/sign-up"}>Register an account</NavLink>
+                    <div className="have-account">
+                         You have not an a account? <NavLink to={"/sign-up"}>Register an account</NavLink>
                     </div>
                     <Button
                          type="submit"
