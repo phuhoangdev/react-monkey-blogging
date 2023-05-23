@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAuth } from "../contexts/auth-context";
 import { NavLink, useNavigate } from "react-router-dom";
 import AuthPage from "./AuthPage";
@@ -10,10 +10,9 @@ import { Button } from "../components/button";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
-import IconEyeOpen from "../components/icon/IconEyeOpen";
-import IconEyeClose from "../components/icon/IconEyeClose";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase-app/firebase-config";
+import InputPassword from "../components/input/InputPassword";
 
 const schema = yup.object({
      email: yup.string().email("Please enter valid email address").required("Email is required"),
@@ -23,7 +22,6 @@ const schema = yup.object({
 const SignInPage = () => {
      const { userInfo } = useAuth();
      const navigate = useNavigate();
-     const [togglePassword, setTogglePassword] = useState(false);
 
      const {
           handleSubmit,
@@ -68,27 +66,12 @@ const SignInPage = () => {
                     </Field>
                     <Field>
                          <Label htmlFor="password">Password</Label>
-                         <Input type={togglePassword ? "text" : "password"} name="password" placeholder="Enter your password" control={control}>
-                              {!togglePassword ? (
-                                   <IconEyeOpen onClick={() => setTogglePassword(true)} />
-                              ) : (
-                                   <IconEyeClose onClick={() => setTogglePassword(false)} />
-                              )}
-                         </Input>
+                         <InputPassword control={control} />
                     </Field>
                     <div className="have-account">
                          You have not an a account? <NavLink to={"/sign-up"}>Register an account</NavLink>
                     </div>
-                    <Button
-                         type="submit"
-                         style={{
-                              width: "100%",
-                              maxWidth: 350,
-                              margin: "0 auto",
-                         }}
-                         disabled={isSubmitting}
-                         isLoading={isSubmitting}
-                    >
+                    <Button type="submit" className="w-full max-w[350px] mx-auto" disabled={isSubmitting} isLoading={isSubmitting}>
                          Sign in
                     </Button>
                </form>

@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Field } from "../components/field";
 import { Label } from "../components/label";
 import { Input } from "../components/input";
 import { Button } from "../components/button";
 import { useForm } from "react-hook-form";
-import IconEyeClose from "../components/icon/IconEyeClose";
-import IconEyeOpen from "../components/icon/IconEyeOpen";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
@@ -14,6 +12,7 @@ import { auth, db } from "../firebase-app/firebase-config";
 import { NavLink, useNavigate } from "react-router-dom";
 import { addDoc, collection } from "firebase/firestore";
 import AuthPage from "./AuthPage";
+import InputPassword from "../components/input/InputPassword";
 
 const schema = yup.object({
      fullname: yup.string().required("Fullname is required"),
@@ -57,8 +56,6 @@ const SignUpPage = () => {
           navigate("/");
      };
 
-     const [togglePassword, setTogglePassword] = useState(false);
-
      useEffect(() => {
           const arrErrors = Object.values(errors);
 
@@ -87,27 +84,12 @@ const SignUpPage = () => {
                     </Field>
                     <Field>
                          <Label htmlFor="password">Password</Label>
-                         <Input type={togglePassword ? "text" : "password"} name="password" placeholder="Enter your password" control={control}>
-                              {!togglePassword ? (
-                                   <IconEyeOpen onClick={() => setTogglePassword(true)} />
-                              ) : (
-                                   <IconEyeClose onClick={() => setTogglePassword(false)} />
-                              )}
-                         </Input>
+                         <InputPassword control={control} />
                     </Field>
                     <div className="have-account">
                          You already have an account? <NavLink to={"/sign-in"}>Login</NavLink>
                     </div>
-                    <Button
-                         type="submit"
-                         style={{
-                              width: "100%",
-                              maxWidth: 350,
-                              margin: "0 auto",
-                         }}
-                         disabled={isSubmitting}
-                         isLoading={isSubmitting}
-                    >
+                    <Button type="submit" className="w-full max-w[350px] mx-auto" disabled={isSubmitting} isLoading={isSubmitting}>
                          Sign Up
                     </Button>
                </form>

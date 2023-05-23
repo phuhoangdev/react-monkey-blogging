@@ -2,7 +2,9 @@ import Heading from "../../components/layout/Heading";
 import PostFeatureItem from "../post/PostFeatureItem";
 import styled from "styled-components";
 
-const HomeFeatureStyles = styled.div``;
+const HomeFeatureStyles = styled.div`
+     margin-top: 60px;
+`;
 
 const HomeFeature = () => {
      return (
