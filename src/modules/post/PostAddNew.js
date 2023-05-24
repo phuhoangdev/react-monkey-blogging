@@ -8,12 +8,9 @@ import { Label } from "../../components/label";
 import { useForm } from "react-hook-form";
 import slugify from "slugify";
 import { postStatus } from "../../utils/constants";
-import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
 import ImageUpload from "../../components/image/ImageUpload";
-import { useState } from "react";
-import { toast } from "react-toastify";
-import { addDoc, collection } from "firebase/firestore";
-import { db } from "../../firebase-app/firebase-config";
+import { useFirebaseImage } from "../../hooks/useFirebaseImage";
+import Toggle from "../../components/toggle/Toggle";
 
 const PostAddNewStyles = styled.div``;
 
@@ -28,7 +25,8 @@ const PostAddNew = () => {
           },
      });
      const watchStatus = watch("status");
-     const watchCategory = watch("category");
+     // const watchCategory = watch("category");
+     const watchHot = watch("hot");
 
      const addPostHandle = async (values) => {
           const cloneValues = { ...values };
@@ -41,64 +39,7 @@ const PostAddNew = () => {
           // handleUploadImage(cloneValues.image);
      };
 
-     const [progress, setProgress] = useState(0);
-     const [image, setImage] = useState("");
-
-     const handleUploadImage = (file) => {
-          const storage = getStorage();
-          const storageRef = ref(storage, "images/" + file.name);
-          const uploadTask = uploadBytesResumable(storageRef, file);
-
-          uploadTask.on(
-               "state_changed",
-               (snapshot) => {
-                    const progressPercent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    setProgress(progressPercent);
-
-                    switch (snapshot.state) {
-                         case "paused":
-                              console.log("Upload is paused");
-                              break;
-                         case "running":
-                              console.log("Upload is running");
-                              break;
-                         default:
-                              console.log("Nothing");
-                    }
-               },
-               (error) => {
-                    console.log("Error", error);
-               },
-               () => {
-                    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                         // console.log("File available at", downloadURL);
-                         setImage(downloadURL);
-                    });
-               },
-          );
-     };
-
-     const onSelectImage = (e) => {
-          const file = e.target.files[0];
-          if (!file) return;
-
-          setValue("image_name", file.name);
-          handleUploadImage(file);
-     };
-
-     const handleDeleteImage = () => {
-          const storage = getStorage();
-          const imageRef = ref(storage, "images/" + getValues("image_name"));
-
-          deleteObject(imageRef)
-               .then(() => {
-                    setProgress(0);
-                    setImage("");
-               })
-               .catch((error) => {
-                    console.log("error: ", error);
-               });
-     };
+     const { image, progress, handleSelectImage, handleDeleteImage } = useFirebaseImage(setValue, getValues);
 
      return (
           <PostAddNewStyles>
@@ -117,7 +58,7 @@ const PostAddNew = () => {
                     <div className="grid grid-cols-2 mb-10 gap-x-10">
                          <Field>
                               <Label>Image</Label>
-                              <ImageUpload onChange={onSelectImage} progress={progress} image={image} handleDeleteImage={handleDeleteImage} />
+                              <ImageUpload onChange={handleSelectImage} progress={progress} image={image} handleDeleteImage={handleDeleteImage} />
                          </Field>
                          <Field>
                               <Label>Status</Label>
@@ -164,7 +105,12 @@ const PostAddNew = () => {
                                    <Dropdown.Option>Developer</Dropdown.Option>
                               </Dropdown>
                          </Field>
-                         <Field></Field>
+                    </div>
+                    <div className="grid grid-cols-2 mb-10 gap-x-10">
+                         <Field>
+                              <Label>Fetured Post</Label>
+                              <Toggle on={watchHot === true} onClick={() => setValue("hot", !watchHot)} />
+                         </Field>
                     </div>
                     <Button type="submit" className="mx-auto">
                          Add new post
