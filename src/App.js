@@ -22,9 +22,9 @@ const App = () => {
                          <Route path="/:slug" element={<PostDetailsPage></PostDetailsPage>}></Route>
                          <Route element={<DashboardLayout></DashboardLayout>}>
                               <Route path="/dashboard" element={<DashboardPage></DashboardPage>}></Route>
+                              <Route path="/manage/post" element={<PostManage></PostManage>}></Route>
+                              <Route path="/manage/add-post" element={<PostAddNew></PostAddNew>}></Route>
                          </Route>
-                         <Route path="/manage/post" element={<PostManage></PostManage>}></Route>
-                         <Route path="/manage/add-post" element={<PostAddNew></PostAddNew>}></Route>
                     </Routes>
                </AuthProvider>
           </div>

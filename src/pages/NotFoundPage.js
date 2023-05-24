@@ -32,7 +32,7 @@ const NotFoundPage = () => {
      return (
           <NotFoundPageStyles>
                <NavLink to="/" className="logo">
-                    <img src="./assets/images/logo.svg" alt="logo" />
+                    <img src="/assets/images/logo.svg" alt="logo" />
                </NavLink>
                <h1 className="heading">Oops! Page not found</h1>
                <NavLink to="/" className="back">
